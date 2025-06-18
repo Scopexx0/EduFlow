@@ -6,65 +6,45 @@ import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileNav } from "@/components/mobile-nav"
 import { ClipboardList, Users, AlertTriangle, CheckCircle, Clock, Bell, UserCheck, UserX, Calendar } from "lucide-react"
+import { dbHelpers } from "@/lib/database-json"
+import { dateUtils } from "@/lib/date-utils"
 import Link from "next/link"
 
 export default function HomePage() {
-  // Datos del preceptor
-  const preceptorData = {
-    name: "María González",
-    role: "Preceptora",
-    turno: "Mañana",
-    cursosAsignados: 8,
-  }
+  // ✅ Obtener datos reales de la base de datos (sin await)
+  const preceptorData = dbHelpers.getPreceptorById(1)
 
-  // Resumen del día
-  const dailyStats = {
-    totalEstudiantes: 240,
-    presentes: 218,
-    ausentes: 22,
-    tardanzas: 8,
-    justificaciones: 5,
-  }
+  // Obtener cursos reales desde la base de datos
+  const cursosFromDB = dbHelpers.getCursosByPreceptor(1)
+  const today = new Date().toISOString().split("T")[0]
+  // Para mostrar al usuario
+  const todayDisplay = dateUtils.getTodayDisplay()
 
-  // Cursos asignados
-  const cursosAsignados = [
-    {
-      id: "1a",
-      nombre: "1° A",
-      estudiantes: 28,
-      presentes: 26,
-      ausentes: 2,
-      tardanzas: 1,
-      asistenciaTomada: true,
-    },
-    {
-      id: "1b",
-      nombre: "1° B",
-      estudiantes: 30,
-      presentes: 28,
-      ausentes: 2,
-      tardanzas: 0,
-      asistenciaTomada: true,
-    },
-    {
-      id: "2a",
-      nombre: "2° A",
-      estudiantes: 32,
-      presentes: 0,
-      ausentes: 0,
-      tardanzas: 0,
-      asistenciaTomada: false,
-    },
-    {
-      id: "2b",
-      nombre: "2° B",
-      estudiantes: 29,
-      presentes: 0,
-      ausentes: 0,
-      tardanzas: 0,
-      asistenciaTomada: false,
-    },
-  ]
+  const cursosData = cursosFromDB.map((curso) => {
+    const asistenciaHoy = dbHelpers.getAsistenciaByFechaAndCurso(today, curso.id)
+    const asistenciaTomada = asistenciaHoy.length > 0
+
+    return {
+      id: curso.id,
+      nombre: curso.nombre,
+      estudiantes: curso.total_estudiantes_real || curso.total_estudiantes,
+      asistenciaTomada,
+      ...(asistenciaTomada && {
+        presentes: asistenciaHoy.filter((a) => a.presente).length,
+        ausentes: asistenciaHoy.filter((a) => !a.presente && !a.justificado).length,
+        tardanzas: asistenciaHoy.filter((a) => a.tardanza).length,
+      }),
+    }
+  })
+
+  // Obtener estadísticas reales del día
+  const estadisticasDelDia = dbHelpers.getEstadisticasDelDia(today, 1) || {
+    total_registros: 0,
+    presentes: 0,
+    ausentes: 0,
+    tardanzas: 0,
+    justificados: 0,
+  }
 
   // Alertas importantes
   const alertas = [
@@ -112,10 +92,10 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Hola {preceptorData.name.split(" ")[0]} 👋
+                Hola {preceptorData?.nombre ?? "Usuario"} 👋
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {preceptorData.role} - Turno {preceptorData.turno}
+                Preceptor/a - Turno {preceptorData?.turno}
               </p>
             </div>
           </div>
@@ -137,7 +117,7 @@ export default function HomePage() {
               <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               Resumen de Hoy
             </CardTitle>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Miércoles, 17 de Enero 2024</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{todayDisplay}</p>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
@@ -146,8 +126,8 @@ export default function HomePage() {
                   <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
                   <span className="text-sm font-medium text-green-800 dark:text-green-200">Presentes</span>
                 </div>
-                <p className="text-2xl font-bold text-green-800 dark:text-green-200">{dailyStats.presentes}</p>
-                <p className="text-xs text-green-600 dark:text-green-400">de {dailyStats.totalEstudiantes}</p>
+                <p className="text-2xl font-bold text-green-800 dark:text-green-200">{estadisticasDelDia.presentes}</p>
+                <p className="text-xs text-green-600 dark:text-green-400">de {estadisticasDelDia.total_registros}</p>
               </div>
 
               <div className="bg-red-50 dark:bg-red-950 p-3 rounded-lg border border-red-200 dark:border-red-800">
@@ -155,8 +135,8 @@ export default function HomePage() {
                   <UserX className="h-4 w-4 text-red-600 dark:text-red-400" />
                   <span className="text-sm font-medium text-red-800 dark:text-red-200">Ausentes</span>
                 </div>
-                <p className="text-2xl font-bold text-red-800 dark:text-red-200">{dailyStats.ausentes}</p>
-                <p className="text-xs text-red-600 dark:text-red-400">{dailyStats.tardanzas} tardanzas</p>
+                <p className="text-2xl font-bold text-red-800 dark:text-red-200">{estadisticasDelDia.ausentes}</p>
+                <p className="text-xs text-red-600 dark:text-red-400">{estadisticasDelDia.tardanzas} tardanzas</p>
               </div>
             </div>
           </CardContent>
@@ -187,10 +167,10 @@ export default function HomePage() {
               <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Mis Cursos
             </CardTitle>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{preceptorData.cursosAsignados} cursos asignados</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{cursosFromDB.length} cursos asignados</p>
           </CardHeader>
           <CardContent className="space-y-3">
-            {cursosAsignados.map((curso) => (
+            {cursosData.map((curso) => (
               <div
                 key={curso.id}
                 className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
@@ -209,7 +189,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-4 text-sm">
                     <span className="text-green-600 dark:text-green-400">✅ {curso.presentes} presentes</span>
                     <span className="text-red-600 dark:text-red-400">❌ {curso.ausentes} ausentes</span>
-                    {curso.tardanzas > 0 && (
+                    {(curso.tardanzas ?? 0) > 0 && (
                       <span className="text-orange-600 dark:text-orange-400">⏰ {curso.tardanzas} tarde</span>
                     )}
                   </div>

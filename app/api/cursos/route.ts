@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { dbHelpers } from "../../../lib/database"
+import { dbHelpers } from "../../../lib/database-json"
 import type { CursoFromDB, Course } from "../../../types"
 
 export async function GET(request: NextRequest) {

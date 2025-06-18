@@ -192,7 +192,7 @@ export default function AsistenciaPage() {
         </div>
       </header>
 
-      <main className="p-4 space-y-4">
+      <main className="p-4 space-y-4 pb-24">
         {/* Selección de curso */}
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-3">
@@ -296,13 +296,13 @@ export default function AsistenciaPage() {
                 </Card>
 
                 {/* Lista de estudiantes */}
-                <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+                <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mb-32">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base text-gray-900 dark:text-gray-100">
                       Lista de Estudiantes ({filteredStudents.length})
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-3 pb-8">
                     {filteredStudents.map((student) => (
                       <div
                         key={student.id}

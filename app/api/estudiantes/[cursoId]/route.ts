@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { dbHelpers } from "@/lib/database"
+import { dbHelpers } from "@/lib/database-json"
 import type { EstudianteFromDB, AsistenciaFromDB, Student } from "@/types"
 
 export async function GET(request: NextRequest, { params }: { params: { cursoId: string } }) {
@@ -10,11 +10,19 @@ export async function GET(request: NextRequest, { params }: { params: { cursoId:
       return NextResponse.json({ error: "ID de curso requerido" }, { status: 400 })
     }
 
-    const estudiantesFromDB = dbHelpers.getEstudiantesByCurso(cursoId) as EstudianteFromDB[]
+    const estudiantesFromDB = dbHelpers.getEstudiantesByCurso(cursoId).map((est: any) => ({
+      ...est,
+      activo: est.activo ? 1 : 0,
+    })) as EstudianteFromDB[]
 
     // Verificar si ya hay asistencia tomada hoy
     const today = new Date().toISOString().split("T")[0]
-    const asistenciaHoy = dbHelpers.getAsistenciaByFechaAndCurso(today, cursoId) as AsistenciaFromDB[]
+    const asistenciaHoy = dbHelpers.getAsistenciaByFechaAndCurso(today, cursoId).map((a: any) => ({
+      ...a,
+      presente: a.presente ? 1 : 0,
+      tardanza: a.tardanza ? 1 : 0,
+      justificado: a.justificado ? 1 : 0,
+    })) as AsistenciaFromDB[]
 
     // Combinar estudiantes con su asistencia del día (si existe)
     const estudiantesConAsistencia: Student[] = estudiantesFromDB.map((estudiante) => {

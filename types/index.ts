@@ -12,9 +12,9 @@ export interface Course {
 
 export interface Preceptor {
   id: number
-  firstName: string
+  nombre: string
   email: string
-  shift: string // "mañana" o "tarde"
+  turno: string // "mañana" o "tarde"
 }
 
 export interface Student {

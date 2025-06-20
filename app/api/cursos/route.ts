@@ -1,33 +1,63 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { dbHelpers } from "../../../lib/database-json"
-import type { CursoFromDB, Course } from "../../../types"
+import { db } from "@/lib/db"
 
 export async function GET(request: NextRequest) {
   try {
-    // Por ahora usamos preceptor ID = 1 (después implementaremos autenticación)
-    const preceptorId = 1
-
-    const cursosFromDB = dbHelpers.getCursosByPreceptor(preceptorId) as CursoFromDB[]
-
-    // Verificar si ya se tomó asistencia hoy para cada curso
+    const preceptorId = 1 // simulado por ahora
     const today = new Date().toISOString().split("T")[0]
 
-    const cursosConAsistencia: Course[] = cursosFromDB.map((curso) => {
-      const asistenciaHoy = dbHelpers.getAsistenciaByFechaAndCurso(today, curso.id) as { presente: boolean; justificado: boolean; tardanza: boolean }[]
+    // Obtener cursos y total de estudiantes activos por curso
+    const cursosResult = await db.query(
+      `SELECT 
+         c.id, 
+         c.nombre, 
+         c.nivel, 
+         c.seccion,
+         COUNT(e.id) AS total_estudiantes_real
+       FROM cursos c
+       LEFT JOIN estudiantes e ON e.curso_id = c.id AND e.activo = true
+       WHERE c.preceptor_id = $1
+       GROUP BY c.id`,
+      [preceptorId]
+    )
+
+    const cursos = cursosResult.rows
+
+    // Obtener asistencia por curso para el día de hoy
+    const asistenciaResult = await db.query(
+      `SELECT 
+         curso_id,
+         COUNT(*) AS total,
+         COUNT(*) FILTER (WHERE presente) AS presentes,
+         COUNT(*) FILTER (WHERE NOT presente AND NOT justificado) AS ausentes,
+         COUNT(*) FILTER (WHERE tardanza) AS tardanzas,
+         COUNT(*) FILTER (WHERE justificado) AS justificados
+       FROM asistencia
+       WHERE fecha = $1 AND preceptor_id = $2
+       GROUP BY curso_id`,
+      [today, preceptorId]
+    )
+
+    const asistenciaPorCurso = Object.fromEntries(
+      asistenciaResult.rows.map((row) => [row.curso_id, row])
+    )
+
+    // Armar respuesta
+    const cursosConAsistencia = cursos.map((curso: any) => {
+      const stats = asistenciaPorCurso[curso.id]
 
       return {
         id: curso.id,
         nombre: curso.nombre,
         nivel: curso.nivel,
         seccion: curso.seccion,
-        estudiantes: curso.total_estudiantes_real || 0,
-        asistenciaTomada: asistenciaHoy.length > 0,
-        // Si ya se tomó, calcular estadísticas
-        ...(asistenciaHoy.length > 0 && {
-          presentes: asistenciaHoy.filter((a: { presente: boolean }) => a.presente).length,
-          ausentes: asistenciaHoy.filter((a: { presente: boolean; justificado: boolean }) => !a.presente && !a.justificado).length,
-          tardanzas: asistenciaHoy.filter((a: { tardanza: boolean }) => a.tardanza).length,
-          justificados: asistenciaHoy.filter((a: { justificado: boolean }) => a.justificado).length,
+        estudiantes: parseInt(curso.total_estudiantes_real) || 0,
+        asistenciaTomada: !!stats,
+        ...(stats && {
+          presentes: parseInt(stats.presentes),
+          ausentes: parseInt(stats.ausentes),
+          tardanzas: parseInt(stats.tardanzas),
+          justificados: parseInt(stats.justificados),
         }),
       }
     })

@@ -1,44 +1,23 @@
-"use client"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileNav } from "@/components/mobile-nav"
 import { ClipboardList, Users, AlertTriangle, CheckCircle, Clock, Bell, UserCheck, UserX, Calendar } from "lucide-react"
-import { dbHelpers } from "@/lib/database-json"
 import { dateUtils } from "@/lib/date-utils"
 import Link from "next/link"
+import { getPreceptorById, getCursosByPreceptor, getAsistenciaByFechaAndCurso, getEstadisticasDelDia } from "@/lib/queries"
+import { Course } from "@/types"
 
-export default function HomePage() {
-  // ✅ Obtener datos reales de la base de datos (sin await)
-  const preceptorData = dbHelpers.getPreceptorById(1)
 
-  // Obtener cursos reales desde la base de datos
-  const cursosFromDB = dbHelpers.getCursosByPreceptor(1)
+export default async function HomePage() {
+  const preceptorId = 1
   const today = new Date().toISOString().split("T")[0]
-  // Para mostrar al usuario
   const todayDisplay = dateUtils.getTodayDisplay()
 
-  const cursosData = cursosFromDB.map((curso) => {
-    const asistenciaHoy = dbHelpers.getAsistenciaByFechaAndCurso(today, curso.id)
-    const asistenciaTomada = asistenciaHoy.length > 0
-
-    return {
-      id: curso.id,
-      nombre: curso.nombre,
-      estudiantes: curso.total_estudiantes_real || curso.total_estudiantes,
-      asistenciaTomada,
-      ...(asistenciaTomada && {
-        presentes: asistenciaHoy.filter((a) => a.presente).length,
-        ausentes: asistenciaHoy.filter((a) => !a.presente && !a.justificado).length,
-        tardanzas: asistenciaHoy.filter((a) => a.tardanza).length,
-      }),
-    }
-  })
-
-  // Obtener estadísticas reales del día
-  const estadisticasDelDia = dbHelpers.getEstadisticasDelDia(today, 1) || {
+  const preceptorData = await getPreceptorById(preceptorId)
+  const cursosFromDB = await getCursosByPreceptor(preceptorId)
+  const estadisticasDelDia = await getEstadisticasDelDia(today, preceptorId) || {
     total_registros: 0,
     presentes: 0,
     ausentes: 0,
@@ -46,7 +25,25 @@ export default function HomePage() {
     justificados: 0,
   }
 
-  // Alertas importantes
+  const cursosData = await Promise.all(
+    cursosFromDB.map(async (curso) => {
+      const asistenciaHoy = await getAsistenciaByFechaAndCurso(today, curso.id)
+      const asistenciaTomada = asistenciaHoy.length > 0
+
+      return {
+        id: curso.id,
+        nombre: curso.nombre,
+        estudiantes: curso.total_estudiantes_real || curso.total_estudiantes,
+        asistenciaTomada,
+        ...(asistenciaTomada && {
+          presentes: asistenciaHoy.filter((a) => a.presente).length,
+          ausentes: asistenciaHoy.filter((a) => !a.presente && !a.justificado).length,
+          tardanzas: asistenciaHoy.filter((a) => a.tardanza).length,
+        }),
+      }
+    })
+  )
+
   const alertas = [
     {
       id: 1,
@@ -95,7 +92,7 @@ export default function HomePage() {
                 Hola {preceptorData?.nombre ?? "Usuario"} 👋
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Preceptor/a - Turno {preceptorData?.turno}
+                Preceptor/a - Turno {preceptorData?.turno || ""}
               </p>
             </div>
           </div>
@@ -170,7 +167,7 @@ export default function HomePage() {
             <p className="text-sm text-gray-600 dark:text-gray-400">{cursosFromDB.length} cursos asignados</p>
           </CardHeader>
           <CardContent className="space-y-3">
-            {cursosData.map((curso) => (
+            {cursosData.map((curso: Course) => (
               <div
                 key={curso.id}
                 className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"

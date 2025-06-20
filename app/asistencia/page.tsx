@@ -11,10 +11,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Save, Users, Search, CheckCircle, UserX, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import type { Course, Student } from "@/types"
 
 export default function AsistenciaPage() {
+  // Router para redirigir después de guardar
+  const router = useRouter()
   // Estados con tipos correctos
   const [courses, setCourses] = useState<Course[]>([])
   const [students, setStudents] = useState<Student[]>([])
@@ -149,6 +151,8 @@ export default function AsistenciaPage() {
       if (response.ok) {
         alert("✅ Asistencia guardada correctamente!")
         // Opcional: redirigir o actualizar datos
+        router.push("/")
+        router.refresh()
       } else {
         alert(`❌ Error: ${result.error}`)
       }

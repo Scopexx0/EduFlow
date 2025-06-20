@@ -1,45 +1,59 @@
+// app/api/asistencia/route.ts
+// Este archivo maneja las rutas de la API para la asistencia de estudiantes.
 import { type NextRequest, NextResponse } from "next/server"
-import { dbHelpers } from "@/lib/database"
-import type { Student, AsistenciaData, EstadisticasDelDia } from "@/types"
+import { db } from "@/lib/db"
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const {
-      cursoId,
-      fecha,
-      estudiantes,
-    }: {
-      cursoId: string
-      fecha: string
-      estudiantes: Student[]
-    } = body
+    const { cursoId, fecha, estudiantes } = body
 
-    // Validaciones básicas
-    if (!cursoId || !fecha || !estudiantes || !Array.isArray(estudiantes)) {
+    if (!cursoId || !fecha || !Array.isArray(estudiantes)) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 })
     }
 
-    // Por ahora usamos preceptor ID = 1 (después implementaremos autenticación)
-    const preceptorId = 1
+    // Cambiar cuando se implemente autenticación
+    const preceptorId = 1 // Simulado
 
-    // Preparar datos para guardar
-    const asistenciaData: AsistenciaData[] = estudiantes.map((estudiante) => ({
-      estudiante_id: estudiante.id,
-      curso_id: cursoId,
-      fecha: fecha,
-      presente: estudiante.present,
-      tardanza: estudiante.late,
-      justificado: estudiante.justified,
-      observaciones: estudiante.observations || null,
-      preceptor_id: preceptorId,
-    }))
+    // Borrar asistencia previa para estos estudiantes en esa fecha
+    const estudianteIds = estudiantes.map((e: any) => e.id)
+    await db.query(
+      `DELETE FROM asistencia WHERE fecha = $1 AND estudiante_id = ANY($2::int[])`,
+      [fecha, estudianteIds]
+    )
 
-    // Guardar en la base de datos
-    dbHelpers.saveAsistencia(asistenciaData)
+    // Insertar asistencia nueva
+    for (const estudiante of estudiantes) {
+      await db.query(
+        `INSERT INTO asistencia (estudiante_id, curso_id, fecha, presente, tardanza, justificado, observaciones, preceptor_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          estudiante.id,
+          cursoId,
+          fecha,
+          estudiante.present,
+          estudiante.late,
+          estudiante.justified,
+          estudiante.observations || null,
+          preceptorId,
+        ]
+      )
+    }
 
-    // Obtener estadísticas actualizadas
-    const estadisticas = dbHelpers.getEstadisticasDelDia(fecha, preceptorId) as EstadisticasDelDia
+    // Calcular estadísticas actualizadas
+    const result = await db.query(
+      `SELECT 
+        COUNT(*) AS total_registros,
+        COUNT(*) FILTER (WHERE presente) AS presentes,
+        COUNT(*) FILTER (WHERE NOT presente AND NOT justificado) AS ausentes,
+        COUNT(*) FILTER (WHERE tardanza) AS tardanzas,
+        COUNT(*) FILTER (WHERE justificado) AS justificados
+      FROM asistencia
+      WHERE fecha = $1 AND preceptor_id = $2`,
+      [fecha, preceptorId]
+    )
+
+    const estadisticas = result.rows[0]
 
     return NextResponse.json({
       success: true,
@@ -57,28 +71,34 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const fecha = searchParams.get("fecha") || new Date().toISOString().split("T")[0]
     const cursoId = searchParams.get("curso")
-
-    // Por ahora usamos preceptor ID = 1
-    const preceptorId = 1
+    const preceptorId = 1 // Simulado
 
     if (cursoId) {
-      // Obtener asistencia específica de un curso
-      const asistencia = dbHelpers.getAsistenciaByFechaAndCurso(fecha, cursoId)
-      return NextResponse.json(asistencia)
+      const result = await db.query(
+        `SELECT a.*, e.nombre, e.apellido
+         FROM asistencia a
+         JOIN estudiantes e ON a.estudiante_id = e.id
+         WHERE a.fecha = $1 AND a.curso_id = $2`,
+        [fecha, cursoId]
+      )
+
+      return NextResponse.json(result.rows)
     } else {
-      // Obtener estadísticas generales del día
-      const estadisticas = dbHelpers.getEstadisticasDelDia(fecha, preceptorId) as EstadisticasDelDia | null
+      const result = await db.query(
+        `SELECT 
+          COUNT(*) AS total_registros,
+          COUNT(*) FILTER (WHERE presente) AS presentes,
+          COUNT(*) FILTER (WHERE NOT presente AND NOT justificado) AS ausentes,
+          COUNT(*) FILTER (WHERE tardanza) AS tardanzas,
+          COUNT(*) FILTER (WHERE justificado) AS justificados
+        FROM asistencia
+        WHERE fecha = $1 AND preceptor_id = $2`,
+        [fecha, preceptorId]
+      )
 
-      // Si no hay estadísticas, devolver valores por defecto
-      const estadisticasDefault: EstadisticasDelDia = {
-        total_registros: 0,
-        presentes: 0,
-        ausentes: 0,
-        tardanzas: 0,
-        justificados: 0,
-      }
+      const estadisticas = result.rows[0]
 
-      return NextResponse.json(estadisticas || estadisticasDefault)
+      return NextResponse.json(estadisticas)
     }
   } catch (error) {
     console.error("Error al obtener asistencia:", error)

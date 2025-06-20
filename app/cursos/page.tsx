@@ -1,5 +1,5 @@
 "use client"
-
+// Not needed for preceptor(could be deleted unless students are implemented)
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"

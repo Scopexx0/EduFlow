@@ -15,11 +15,11 @@ const navItems = [
     href: "/asistencia",
     icon: ClipboardList,
   },
-  {
-    title: "Cursos",
-    href: "/cursos",
-    icon: Users,
-  },
+  // {
+  //   title: "Cursos",
+  //   href: "/cursos",
+  //   icon: Users,
+  // },
   {
     title: "Avisos",
     href: "/avisos",

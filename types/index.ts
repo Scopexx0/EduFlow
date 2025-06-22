@@ -15,6 +15,7 @@ export interface Preceptor {
   nombre: string
   email: string
   turno: string // "mañana" o "tarde"
+  password: string
 }
 
 export interface Student {

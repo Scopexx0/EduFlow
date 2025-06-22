@@ -6,12 +6,14 @@ import { MobileNav } from "@/components/mobile-nav"
 import { ClipboardList, Users, AlertTriangle, CheckCircle, Clock, Bell, UserCheck, UserX, Calendar } from "lucide-react"
 import { dateUtils } from "@/lib/date-utils"
 import Link from "next/link"
-import { getPreceptorById, getCursosByPreceptor, getAsistenciaByFechaAndCurso, getEstadisticasDelDia } from "@/lib/queries"
+import { getPreceptorById, getCursosByPreceptor, getAsistenciaByFechaAndCurso, getEstadisticasDelDia, getPreceptorIdFromCookies } from "@/lib/queries"
 import { Course } from "@/types"
+import { cookies } from "next/headers"
 
 
 export default async function HomePage() {
-  const preceptorId = 1
+  const cookieStore = cookies()
+  const preceptorId = getPreceptorIdFromCookies() || -1
   const today = new Date().toISOString().split("T")[0]
   const todayDisplay = dateUtils.getTodayDisplay()
 

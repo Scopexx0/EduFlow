@@ -1,10 +1,31 @@
 // lib/queries.ts
+export const runtime = "nodejs"
+
 import { db } from "./db"
 import { CursoFromDB, AsistenciaFromDB, Preceptor } from "@/types"
+import jwt from "jsonwebtoken"
+import { cookies } from "next/headers"
 
 export async function getPreceptorById(id: number): Promise<Preceptor | null> {
   const res = await db.query("SELECT * FROM preceptores WHERE id = $1", [id])
   return res.rows[0] || null
+}
+
+export function getPreceptorIdFromCookies(): number | null {
+  const token = cookies().get("token")?.value
+  if (!token) return null
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number }
+    return decoded.id
+  } catch {
+    return null
+  }
+}
+
+export async function getPreceptorByEmail(email: string): Promise<Preceptor | null> {
+    const res = await db.query("SELECT * FROM preceptores WHERE email = $1", [email])
+    return res.rows[0] || null
 }
 
 export async function getCursosByPreceptor(preceptorId: number): Promise<CursoFromDB[]> {

@@ -2,6 +2,7 @@
 // Este archivo maneja las rutas de la API para la asistencia de estudiantes.
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { getPreceptorIdFromCookies } from "@/lib/queries"
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,8 +13,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 })
     }
 
-    // Cambiar cuando se implemente autenticación
-    const preceptorId = 1 // Simulado
+    // Authenticate preceptor from cookies
+    const preceptorId = getPreceptorIdFromCookies() || -1
 
     // Borrar asistencia previa para estos estudiantes en esa fecha
     const estudianteIds = estudiantes.map((e: any) => e.id)

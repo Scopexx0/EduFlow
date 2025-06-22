@@ -1,9 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { getPreceptorIdFromCookies } from "@/lib/queries"
 
 export async function GET(request: NextRequest) {
   try {
-    const preceptorId = 1 // simulado por ahora
+    // Authenticate user via cookie
+    const preceptorId = getPreceptorIdFromCookies() || -1
+    
     const today = new Date().toISOString().split("T")[0]
 
     // Obtener cursos y total de estudiantes activos por curso

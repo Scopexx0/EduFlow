@@ -8,11 +8,8 @@ import { dateUtils } from "@/lib/date-utils"
 import Link from "next/link"
 import { getPreceptorById, getCursosByPreceptor, getAsistenciaByFechaAndCurso, getEstadisticasDelDia, getPreceptorIdFromCookies } from "@/lib/queries"
 import { Course } from "@/types"
-import { cookies } from "next/headers"
-
 
 export default async function HomePage() {
-  const cookieStore = cookies()
   const preceptorId = getPreceptorIdFromCookies() || -1
   const today = new Date().toISOString().split("T")[0]
   const todayDisplay = dateUtils.getTodayDisplay()

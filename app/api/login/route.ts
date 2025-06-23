@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign(
       { id: preceptor.id },
       process.env.JWT_SECRET!,
-      { expiresIn: "1d" }
+      { expiresIn: "3h" }
     )
     // Configuración segura de cookies
     cookies().set("token", token, {

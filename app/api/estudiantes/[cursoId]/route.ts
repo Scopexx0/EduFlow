@@ -1,13 +1,21 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { getPreceptorIdFromCookies, getPreceptorByCurso, getCursosByPreceptor } from "@/lib/queries"
 
 // Esta ruta obtiene los estudiantes de un curso específico y su asistencia del día actual
 export async function GET(
   request: NextRequest,
   { params }: { params: { cursoId: string } }
 ) {
-  try {
+  try {    
     const { cursoId } = params
+    
+    // Authenticate user via cookie
+    const preceptorId = getPreceptorIdFromCookies() || -1
+    const validation = await getPreceptorByCurso(cursoId)
+    if (validation !== preceptorId) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 401 })
+    }
 
     if (!cursoId) {
       return NextResponse.json({ error: "ID de curso requerido" }, { status: 400 })

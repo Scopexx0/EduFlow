@@ -5,16 +5,30 @@ import { db } from "@/lib/db"
 import { getPreceptorIdFromCookies } from "@/lib/queries"
 
 export async function POST(request: NextRequest) {
+  const preceptorId = getPreceptorIdFromCookies()
+  if (!preceptorId) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 401})
+  }
+
   try {
     const body = await request.json()
     const { cursoId, fecha, estudiantes } = body
+
+    // Verificamos si el curso pertenece al preceptor
+    const { rows } = await db.query(
+      "SELECT id FROM cursos WHERE id = $1 AND preceptor_id = $2",
+      [cursoId, preceptorId]
+    )
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "Curso no autorizado" }, { status: 403 })
+    }
 
     if (!cursoId || !fecha || !Array.isArray(estudiantes)) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 })
     }
 
     // Authenticate preceptor from cookies
-    const preceptorId = getPreceptorIdFromCookies() || -1
+    // const preceptorId = getPreceptorIdFromCookies() || -1
 
     // Borrar asistencia previa para estos estudiantes en esa fecha
     const estudianteIds = estudiantes.map((e: any) => e.id)

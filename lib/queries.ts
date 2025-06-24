@@ -55,6 +55,16 @@ export async function getCursosByPreceptor(preceptorId: number): Promise<CursoFr
   return res.rows
 }
 
+export async function getPreceptorByCurso(cursoId: string): Promise<number | null> {
+  const res = await db.query(`
+    SELECT p.*
+    FROM preceptores p
+    JOIN cursos c ON p.id = c.preceptor_id
+    WHERE c.id = $1
+  `, [cursoId])
+  return res.rows[0] || null
+}
+
 export async function getAsistenciaByFechaAndCurso(fecha: string, cursoId: string): Promise<AsistenciaFromDB[]> {
   const res = await db.query(`
     SELECT a.*, e.nombre, e.apellido, (e.nombre || ' ' || e.apellido) as nombre_completo

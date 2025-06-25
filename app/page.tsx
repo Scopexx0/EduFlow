@@ -242,7 +242,7 @@ export default async function HomePage() {
         </Card>
 
         {/* Acciones rápidas */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+        {/* <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-gray-900 dark:text-gray-100">Acciones Rápidas</CardTitle>
           </CardHeader>
@@ -268,7 +268,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </main>
 
       <MobileNav />

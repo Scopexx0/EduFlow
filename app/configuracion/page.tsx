@@ -14,27 +14,27 @@ export default function ConfiguracionPage() {
       description: "Actualiza tu información personal",
       href: "/configuracion/perfil"
     },
-    {
-      id: 2,
-      title: "Notificaciones",
-      icon: <Bell className="h-5 w-5" />,
-      description: "Configura alertas y recordatorios",
-      href: "/configuracion/notificaciones"
-    },
+    // {
+    //   id: 2,
+    //   title: "Notificaciones",
+    //   icon: <Bell className="h-5 w-5" />,
+    //   description: "Configura alertas y recordatorios",
+    //   href: "/configuracion/notificaciones"
+    // },
     {
       id: 3,
       title: "Seguridad",
       icon: <Lock className="h-5 w-5" />,
-      description: "Cambia contraseña y autenticación",
+      description: "Cambia contraseña",
       href: "/configuracion/seguridad"
     },
-    {
-      id: 4,
-      title: "Ayuda",
-      icon: <HelpCircle className="h-5 w-5" />,
-      description: "Centro de soporte y preguntas frecuentes",
-      href: "/configuracion/ayuda"
-    }
+    // {
+    //   id: 4,
+    //   title: "Ayuda",
+    //   icon: <HelpCircle className="h-5 w-5" />,
+    //   description: "Centro de soporte y preguntas frecuentes",
+    //   href: "/configuracion/ayuda"
+    // }
   ]
 
   return (
@@ -91,7 +91,7 @@ export default function ConfiguracionPage() {
         </Card>
 
         {/* Configuración de tema */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+        {/* <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-gray-900 dark:text-gray-100">
               Apariencia
@@ -110,24 +110,21 @@ export default function ConfiguracionPage() {
               <ThemeToggle />
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Configuración avanzada */}
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-gray-900 dark:text-gray-100">
-              Configuración avanzada
+              Configuración Avanzada
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full">
+            {/* <Button variant="outline" className="w-full">
               Exportar datos
-            </Button>
-            <Button variant="outline" className="w-full">
-              Sincronizar con Google Classroom
-            </Button>
+            </Button> */}
             <Button variant="destructive" className="w-full">
-              Cerrar sesión en todos los dispositivos
+              Cerrar sesión
             </Button>
           </CardContent>
         </Card>

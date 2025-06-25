@@ -1,5 +1,7 @@
 "use client"
 
+// SE PUEDE BORRAR ESTE ARCHIVO.
+
 import { BookOpen, Calendar, GraduationCap, Home, Settings, Users, ClipboardList, Bell, BarChart3 } from "lucide-react"
 
 import {

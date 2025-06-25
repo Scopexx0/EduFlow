@@ -6,9 +6,9 @@ export const dateUtils = {
   // Para mostrar al usuario (formato legible con capitalización)
   getTodayDisplay: () => {
     const fecha = new Date().toLocaleDateString("es-ES", {
-      weekday: "long",
+      weekday: "short",
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     })
     // Capitalizar primera letra de cada palabra

@@ -2,6 +2,9 @@
 
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -48,32 +51,40 @@ export default function LoginPage() {
   }
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4 max-w-sm mx-auto mt-10">
-      <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
+    <main className="relative min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-950 px-4">
+      {/* Nombre o título principal */}
+      <h1 className="absolute top-[20%] text-3xl font-bold text-center text-gray-900 dark:text-gray-100 w-full">
+        Bienvenido a EduFlow
+      </h1>
+      <Card className="w-full max-w-md bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Iniciar Sesión</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
-      <input
-        type="email"
-        placeholder="Correo"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="w-full border p-2 rounded"
-      />
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        className="w-full border p-2 rounded"
-      />
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded w-full">
-        Iniciar sesión
-      </button>
-    </form>
+            <Button type="submit" className="w-full">
+              Iniciar sesión
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
   )
 }

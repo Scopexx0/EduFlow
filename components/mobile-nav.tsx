@@ -20,11 +20,11 @@ const navItems = [
   //   href: "/cursos",
   //   icon: Users,
   // },
-  {
-    title: "Avisos",
-    href: "/avisos",
-    icon: MessageSquare,
-  },
+  // {
+  //   title: "Avisos",
+  //   href: "/avisos",
+  //   icon: MessageSquare,
+  // },
   {
     title: "Más",
     href: "/configuracion",

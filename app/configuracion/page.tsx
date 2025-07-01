@@ -61,7 +61,7 @@ export default function ConfiguracionPage() {
 
       <main className="p-4 space-y-6">
         {/* Opciones principales */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+        {/* <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-gray-900 dark:text-gray-100">
               Preferencias
@@ -88,7 +88,7 @@ export default function ConfiguracionPage() {
               </Link>
             ))}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Configuración de tema */}
         {/* <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">

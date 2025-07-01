@@ -5,7 +5,6 @@ import { db } from "./db"
 import { CursoFromDB, AsistenciaFromDB, Preceptor } from "@/types"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"  
-// import { verifyJWT } from "./requireAuth"
 
 export function verifyToken(token: string): number | null {
   try {
@@ -62,7 +61,7 @@ export async function getPreceptorByCurso(cursoId: string): Promise<number | nul
     JOIN cursos c ON p.id = c.preceptor_id
     WHERE c.id = $1
   `, [cursoId])
-  return res.rows[0] || null
+  return res.rows[0]?.id || null
 }
 
 export async function getAsistenciaByFechaAndCurso(fecha: string, cursoId: string): Promise<AsistenciaFromDB[]> {

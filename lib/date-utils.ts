@@ -8,10 +8,10 @@ export const dateUtils = {
     const fecha = new Date().toLocaleDateString("es-ES", {
       weekday: "short",
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
     })
     // Capitalizar primera letra de cada palabra
-    return fecha.replace(/\b\w/g, (letra) => letra.toUpperCase())
+    return fecha.replace(/(^|\s)\S/g, (letra) => letra.toUpperCase());
   }
 }

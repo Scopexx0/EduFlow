@@ -13,7 +13,10 @@ export async function GET(
     // Authenticate user via cookie
     const preceptorId = getPreceptorIdFromCookies() || -1
     const validation = await getPreceptorByCurso(cursoId)
+    // console.log("validation:", validation === preceptorId)
     if (validation !== preceptorId) {
+      console.log("Preceptor no autorizado para este curso:", preceptorId, cursoId)
+      console.warn(`❌ Preceptor no autorizado detectado desde IP: ${request.ip}`)
       return NextResponse.json({ error: "Not authorized" }, { status: 401 })
     }
 

@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
   // If token modified or invalid, force logout
   const isValid = await verifyJWT(token)
   if (!isValid) {
-    console.warn("❌ Token inválido detectado. Forzando logout.")
+    console.warn(`❌ Token inválido detectado desde IP: ${request.ip} . Forzando logout.`)
     const response = NextResponse.redirect(new URL("/login", request.url))
     response.cookies.delete("token")
     return response

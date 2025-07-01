@@ -7,6 +7,7 @@ import { getPreceptorIdFromCookies } from "@/lib/queries"
 export async function POST(request: NextRequest) {
   const preceptorId = getPreceptorIdFromCookies()
   if (!preceptorId) {
+    console.warn(`❌ Preceptor no autorizado detectado desde IP: ${request.ip}`)
     return NextResponse.json({ error: "Not authorized" }, { status: 401})
   }
 

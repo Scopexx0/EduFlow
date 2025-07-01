@@ -43,39 +43,39 @@ export default async function HomePage() {
     })
   )
 
-  const alertas = [
-    {
-      id: 1,
-      tipo: "ausencia",
-      mensaje: "Juan Pérez (2° A) - 3 faltas consecutivas",
-      urgencia: "alta",
-    },
-    {
-      id: 2,
-      tipo: "tardanza",
-      mensaje: "María López (1° B) - 5 tardanzas esta semana",
-      urgencia: "media",
-    },
-    {
-      id: 3,
-      tipo: "justificacion",
-      mensaje: "3 justificaciones pendientes de revisión",
-      urgencia: "baja",
-    },
-  ]
+  // const alertas = [
+  //   {
+  //     id: 1,
+  //     tipo: "ausencia",
+  //     mensaje: "Juan Pérez (2° A) - 3 faltas consecutivas",
+  //     urgencia: "alta",
+  //   },
+  //   {
+  //     id: 2,
+  //     tipo: "tardanza",
+  //     mensaje: "María López (1° B) - 5 tardanzas esta semana",
+  //     urgencia: "media",
+  //   },
+  //   {
+  //     id: 3,
+  //     tipo: "justificacion",
+  //     mensaje: "3 justificaciones pendientes de revisión",
+  //     urgencia: "baja",
+  //   },
+  // ]
 
-  const getUrgenciaColor = (urgencia: string) => {
-    switch (urgencia) {
-      case "alta":
-        return "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
-      case "media":
-        return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800 text-orange-800 dark:text-orange-200"
-      case "baja":
-        return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200"
-      default:
-        return "bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800"
-    }
-  }
+  // const getUrgenciaColor = (urgencia: string) => {
+  //   switch (urgencia) {
+  //     case "alta":
+  //       return "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
+  //     case "media":
+  //       return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800 text-orange-800 dark:text-orange-200"
+  //     case "baja":
+  //       return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200"
+  //     default:
+  //       return "bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800"
+  //   }
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
@@ -96,10 +96,10 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-9 w-9 relative">
+            {/* <Button variant="ghost" size="icon" className="h-9 w-9 relative">
               <Bell className="h-4 w-4" />
               <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs"></span>
-            </Button>
+            </Button> */}
             <ThemeToggle />
           </div>
         </div>

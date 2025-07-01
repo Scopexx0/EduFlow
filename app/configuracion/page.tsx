@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -36,6 +38,27 @@ export default function ConfiguracionPage() {
     //   href: "/configuracion/ayuda"
     // }
   ]
+
+  const logOutUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error("Error al cerrar sesión")
+      }
+
+      // Redirigir a la página de inicio o login
+      window.location.href = "/login"
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
@@ -123,9 +146,11 @@ export default function ConfiguracionPage() {
             {/* <Button variant="outline" className="w-full">
               Exportar datos
             </Button> */}
+          <form onSubmit={logOutUser} className="space-y-4">
             <Button variant="destructive" className="w-full">
               Cerrar sesión
             </Button>
+          </form>
           </CardContent>
         </Card>
       </main>

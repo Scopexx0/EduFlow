@@ -13,8 +13,10 @@ import { ArrowLeft, Save, Users, Search, CheckCircle, UserX, Loader2 } from "luc
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import type { Course, Student } from "@/types"
+import { dateUtils } from "@/lib/date-utils"
 
 export default function AsistenciaPage() {
+  const todayDisplay = dateUtils.getTodayDisplay()
   // Router para redirigir después de guardar
   const router = useRouter()
   // Estados con tipos correctos
@@ -64,6 +66,8 @@ export default function AsistenciaPage() {
         try {
           const response = await fetch(`/api/estudiantes/${selectedCourse}`)
           if (!response.ok) {
+            router.push("/")
+            router.refresh()
             throw new Error("Error al cargar estudiantes")
           }
           const estudiantesData: Student[] = await response.json()
@@ -188,7 +192,7 @@ export default function AsistenciaPage() {
             <div>
               <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Asistencia</h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}
+                {todayDisplay}
               </p>
             </div>
           </div>

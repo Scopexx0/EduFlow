@@ -203,7 +203,7 @@ export default async function HomePage() {
         </Card>
 
         {/* Alertas importantes */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+        {/* <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
               <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
@@ -239,7 +239,7 @@ export default async function HomePage() {
               </div>
             ))}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Acciones rápidas */}
         {/* <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">

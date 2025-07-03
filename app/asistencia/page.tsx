@@ -14,8 +14,11 @@ import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import type { Course, Student } from "@/types"
 import { dateUtils } from "@/lib/date-utils"
+import { useToast } from "@/hooks/use-toast"
 
 export default function AsistenciaPage() {
+  const { toast } = useToast()
+  // Utilidades de fecha
   const todayDisplay = dateUtils.getTodayDisplay()
   // Router para redirigir después de guardar
   const router = useRouter()
@@ -68,7 +71,7 @@ export default function AsistenciaPage() {
           if (!response.ok) {
             router.push("/")
             router.refresh()
-            throw new Error("Error al cargar estudiantes")
+            throw new Error(`Error al cargar estudiantes en curso: ${selectedCourse}`) // NOT Authorized
           }
           const estudiantesData: Student[] = await response.json()
           setStudents(estudiantesData)
@@ -130,8 +133,13 @@ export default function AsistenciaPage() {
   // Guardar en base de datos
   const guardarAsistencia = async () => {
     if (!selectedCourse || students.length === 0) {
-      alert("Selecciona un curso y carga los estudiantes")
-      return
+      // alert("Selecciona un curso y carga los estudiantes")
+      // return
+      toast({
+        title: "⚠️ Faltan datos",
+        description: "Seleccioná un curso y cargá los estudiantes.",
+        variant: "destructive",
+      })
     }
 
     setSaving(true)
@@ -153,16 +161,36 @@ export default function AsistenciaPage() {
       const result = await response.json()
 
       if (response.ok) {
-        alert("✅ Asistencia guardada correctamente!")
-        // Opcional: redirigir o actualizar datos
-        router.push("/")
-        router.refresh()
-      } else {
-        alert(`❌ Error: ${result.error}`)
+        // alert("✅ Asistencia guardada correctamente!")
+        // // Opcional: redirigir o actualizar datos
+        // router.push("/")
+        // router.refresh()
+        toast({
+          title: "✅ Asistencia guardada",
+          description: "Redirigiendo al inicio...",
+        })
+
+        setTimeout(() => {
+          router.push("/")
+          router.refresh()
+        }, 1000) // espera 1 segundo
+      }
+
+      else{
+        toast({
+          title: "❌ Error al guardar",
+          description: result.error || "Intentalo de nuevo.",
+          variant: "destructive",
+        })
       }
     } catch (error) {
-      console.error("Error guardando asistencia:", error)
-      alert("❌ Error de conexión")
+      // console.error("Error guardando asistencia:", error)
+      // alert("❌ Error de conexión")
+      toast({
+        title: "❌ Error de conexión",
+        description: "No se pudo contactar con el servidor.",
+        variant: "destructive",
+      })
     }
     setSaving(false)
   }

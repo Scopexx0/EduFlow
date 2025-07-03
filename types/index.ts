@@ -16,6 +16,7 @@ export interface Preceptor {
   email: string
   turno: string // "mañana" o "tarde"
   password: string
+  password_default: boolean // Indica si es la primera vez que inicia sesión
 }
 
 export interface Student {

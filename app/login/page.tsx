@@ -40,8 +40,11 @@ export default function LoginPage() {
         setError(result.error || "Error desconocido")
         return
       }
+      if (result.mustChangePassword) {
+        router.push("/set_up")
+      }
 
-      // ✅ Login exitoso
+      // Login exitoso
       router.push("/")
       router.refresh()
     } catch (err) {
@@ -85,6 +88,11 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      <small className="absolute bottom-[10%] text-small font-bold text-center text-gray-900 dark:text-gray-100 w-full">
+        <a href="set_up" className="text-blue-600 dark:text-blue-400 hover:underline">
+          ¿Primera Vez Aqui?
+        </a>
+      </small>
     </main>
   )
 }

@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 24 // 1 día
+      maxAge: 60 * 60 * 3 // 3 horas
     })
     
     return NextResponse.json(
@@ -63,7 +63,8 @@ export async function POST(req: NextRequest) {
         user: {
           id: preceptor.id,
           name: preceptor.nombre,
-          email: preceptor.email
+          email: preceptor.email,
+          mustChangePassword: preceptor.password_default
         }
       },
       {

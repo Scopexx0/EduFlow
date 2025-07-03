@@ -9,7 +9,10 @@ export async function middleware(request: NextRequest) {
 
   // If not logged in keep them in login page
   if (!token) {
-    if (path !== "/login") return NextResponse.redirect(new URL("/login", request.url))
+    const publicRoutes = ["/login", "/set_up", "/set_up_pswd"]
+    if (!publicRoutes.includes(path)) {
+      return NextResponse.redirect(new URL("/login", request.url))
+    }
     return NextResponse.next()
   }
 
@@ -23,7 +26,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // If already logged in, redirect to home
-  if(token && path === "/login") {
+  if(token && (path === "/login" || path === "/set_up" || path === "/set_up_pswd")) {
     return NextResponse.redirect(new URL("/", request.url))
   }
 
@@ -71,6 +74,13 @@ async function verifyJWT(token: string): Promise<boolean> {
     base64UrlToUint8Array(signatureB64),
     new TextEncoder().encode(data)
   );
+
+  // Verificar expiración (exp)
+  const payloadJson = JSON.parse(atob(payloadB64));
+  if (payloadJson.exp && Date.now() / 1000 > payloadJson.exp) {
+    console.warn("❌ Token expirado");
+    return false;
+  }
 
   return valid;
 }

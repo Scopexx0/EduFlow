@@ -3,6 +3,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getPreceptorIdFromCookies } from "@/lib/queries"
+import { dateUtils } from "@/lib/date-utils"
 
 export async function POST(request: NextRequest) {
   const preceptorId = getPreceptorIdFromCookies()
@@ -85,11 +86,24 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const fecha = searchParams.get("fecha") || new Date().toISOString().split("T")[0]
+    const fecha = searchParams.get("fecha") || dateUtils.getToday()
     const cursoId = searchParams.get("curso")
-    const preceptorId = 1 // Simulado
+    const preceptorId = getPreceptorIdFromCookies()
+    if (!preceptorId) {
+      console.warn(`❌ Preceptor no autorizado detectado desde IP: ${request.ip}`)
+      return NextResponse.json({ error: "Not authorized" }, { status: 401})
+    }
 
     if (cursoId) {
+      // Verificamos si el curso pertenece al preceptor
+      const { rows } = await db.query(
+        "SELECT id FROM cursos WHERE id = $1 AND preceptor_id = $2",
+        [cursoId, preceptorId]
+      )
+      if (rows.length === 0) {
+        return NextResponse.json({ error: "Curso no autorizado" }, { status: 403 })
+      }
+
       const result = await db.query(
         `SELECT a.*, e.nombre, e.apellido
          FROM asistencia a
@@ -114,7 +128,8 @@ export async function GET(request: NextRequest) {
 
       const estadisticas = result.rows[0]
 
-      return NextResponse.json(estadisticas)
+      // return NextResponse.json(estadisticas)
+      return NextResponse.json("[]")
     }
   } catch (error) {
     console.error("Error al obtener asistencia:", error)

@@ -1,13 +1,18 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getPreceptorIdFromCookies } from "@/lib/queries"
+import { dateUtils } from "@/lib/date-utils"
 
 export async function GET(request: NextRequest) {
   try {
     // Authenticate user via cookie
-    const preceptorId = getPreceptorIdFromCookies() || -1
+    const preceptorId = getPreceptorIdFromCookies()
+    if (!preceptorId) {
+      console.warn(`❌ Preceptor no autorizado detectado desde IP: ${request.ip}`)
+      return NextResponse.json({ error: "Not authorized" }, { status: 401})
+    }
     
-    const today = new Date().toISOString().split("T")[0]
+    const today = dateUtils.getToday()
 
     // Obtener cursos y total de estudiantes activos por curso
     const cursosResult = await db.query(

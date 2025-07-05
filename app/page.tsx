@@ -11,7 +11,7 @@ import { Course } from "@/types"
 
 export default async function HomePage() {
   const preceptorId = getPreceptorIdFromCookies() || -1
-  const today = new Date().toISOString().split("T")[0]
+  const today = dateUtils.getToday()
   const todayDisplay = dateUtils.getTodayDisplay()
 
   const preceptorData = await getPreceptorById(preceptorId)

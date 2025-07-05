@@ -144,7 +144,7 @@ export default function AsistenciaPage() {
 
     setSaving(true)
     try {
-      const today = new Date().toISOString().split("T")[0]
+      const today = dateUtils.getToday()
 
       const response = await fetch("/api/asistencia", {
         method: "POST",

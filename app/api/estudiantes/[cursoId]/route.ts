@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getPreceptorIdFromCookies, getPreceptorByCurso, getCursosByPreceptor } from "@/lib/queries"
+import { dateUtils } from "@/lib/date-utils"
 
 // Esta ruta obtiene los estudiantes de un curso específico y su asistencia del día actual
 export async function GET(
@@ -24,7 +25,7 @@ export async function GET(
       return NextResponse.json({ error: "ID de curso requerido" }, { status: 400 })
     }
 
-    const today = new Date().toISOString().split("T")[0]
+    const today = dateUtils.getToday()
 
     // Obtener estudiantes activos del curso
     const estudiantesResult = await db.query(

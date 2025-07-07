@@ -15,6 +15,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import type { Course, Student } from "@/types"
 import { dateUtils } from "@/lib/date-utils"
 import { useToast } from "@/hooks/use-toast"
+import { DatePicker } from "@/components/date-picker"
 
 export default function AsistenciaPage() {
   const { toast } = useToast()
@@ -30,6 +31,7 @@ export default function AsistenciaPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const [saving, setSaving] = useState<boolean>(false)
   const [loadingStudents, setLoadingStudents] = useState<boolean>(false)
+  const [selectedDate, setSelectedDate] = useState(dateUtils.getToday())
 
   // Para obtener parámetros de URL (?curso=1a)
   const searchParams = useSearchParams()
@@ -144,7 +146,7 @@ export default function AsistenciaPage() {
 
     setSaving(true)
     try {
-      const today = dateUtils.getToday()
+      const today = selectedDate || dateUtils.getToday() // Usar fecha del URL o hoy
 
       const response = await fetch("/api/asistencia", {
         method: "POST",
@@ -251,7 +253,7 @@ export default function AsistenciaPage() {
 
             {selectedCourse && (
               <div className="flex gap-2">
-                <Button
+                {/* <Button
                   onClick={markAllPresent}
                   variant="outline"
                   size="sm"
@@ -260,11 +262,32 @@ export default function AsistenciaPage() {
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Marcar todos presentes
-                </Button>
-                <Button variant="outline" size="sm" onClick={guardarAsistencia} disabled={saving || loadingStudents}>
+                </Button> */}
+                {/* <Button variant="outline" size="sm" onClick={guardarAsistencia} disabled={saving || loadingStudents}>
                   {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
                   {saving ? "Guardando..." : "Guardar"}
-                </Button>
+                </Button> */}
+                {/* <Button variant="outline">
+                <Calendar className="h-4 w-4 mr-2" /> */}
+                <DatePicker
+                  value={selectedDate}
+                  onChange={async (newDate) => {
+                    setSelectedDate(newDate)
+
+                    if (selectedCourse) {
+                      setLoadingStudents(true)
+                      const response = await fetch(`/api/estudiantes/${selectedCourse}?fecha=${newDate}`)
+                      if (!response.ok) {
+                        router.push("/")
+                        router.refresh()
+                        throw new Error(`Error al cargar estudiantes en curso: ${selectedCourse}`)
+                      }
+                      const estudiantesData: Student[] = await response.json()
+                      setStudents(estudiantesData)
+                      setLoadingStudents(false)
+                    }
+                  }}
+                />
               </div>
             )}
           </CardContent>

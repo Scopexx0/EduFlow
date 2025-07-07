@@ -25,7 +25,9 @@ export async function GET(
       return NextResponse.json({ error: "ID de curso requerido" }, { status: 400 })
     }
 
-    const today = dateUtils.getToday()
+    const { searchParams } = new URL(request.url)
+    const today = searchParams.get("fecha") || dateUtils.getToday()
+    console.log("Fecha de asistencia:", today)
 
     // Obtener estudiantes activos del curso
     const estudiantesResult = await db.query(

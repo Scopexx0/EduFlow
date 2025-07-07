@@ -114,8 +114,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0(next@14.2.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       date-fns:
-        specifier: 3.0.0
-        version: 3.0.0
+        specifier: 2.30.0
+        version: 2.30.0
       embla-carousel-react:
         specifier: 8.5.1
         version: 8.5.1(react@18.3.1)
@@ -145,7 +145,7 @@ importers:
         version: 18.3.1
       react-day-picker:
         specifier: 8.10.1
-        version: 8.10.1(date-fns@3.0.0)(react@18.3.1)
+        version: 8.10.1(date-fns@2.30.0)(react@18.3.1)
       react-dom:
         specifier: ^18
         version: 18.3.1(react@18.3.1)
@@ -1427,8 +1427,9 @@ packages:
     resolution: {integrity: sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==}
     engines: {node: '>=12'}
 
-  date-fns@3.0.0:
-    resolution: {integrity: sha512-xjDz3rNN9jp+Lh3P/4MeY4E5HkaRnEnrJCcrdRZnKdn42gJlIe6hwrrwVXePRwVR2kh1UcMnz00erYBnHF8PFA==}
+  date-fns@2.30.0:
+    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
+    engines: {node: '>=0.11'}
 
   decimal.js-light@2.5.1:
     resolution: {integrity: sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==}
@@ -3418,7 +3419,9 @@ snapshots:
 
   d3-timer@3.0.1: {}
 
-  date-fns@3.0.0: {}
+  date-fns@2.30.0:
+    dependencies:
+      '@babel/runtime': 7.27.6
 
   decimal.js-light@2.5.1: {}
 
@@ -3900,9 +3903,9 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  react-day-picker@8.10.1(date-fns@3.0.0)(react@18.3.1):
+  react-day-picker@8.10.1(date-fns@2.30.0)(react@18.3.1):
     dependencies:
-      date-fns: 3.0.0
+      date-fns: 2.30.0
       react: 18.3.1
 
   react-dom@18.3.1(react@18.3.1):

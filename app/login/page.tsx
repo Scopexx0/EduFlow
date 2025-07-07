@@ -24,6 +24,11 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ email, password }),
       })
+      if (response.status === 403){
+        console.warn(`Debe cambiar la contraseña antes de continuar ${response.status}`)
+        router.push("/set_up")
+        return
+      }
 
       let result
       try {
@@ -40,11 +45,9 @@ export default function LoginPage() {
         setError(result.error || "Error desconocido")
         return
       }
-      if (result.mustChangePassword) {
-        router.push("/set_up")
-      }
 
       // Login exitoso
+      console.log("Login exitoso, redirigiendo a la página principal")
       router.push("/")
       router.refresh()
     } catch (err) {

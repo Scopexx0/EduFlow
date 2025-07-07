@@ -42,6 +42,17 @@ export async function POST(req: NextRequest) {
         }
       )
     }
+
+    if (valid && preceptor.password_default) {
+      return NextResponse.json(
+        { error: "Debe cambiar su contraseña antes de continuar" },
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+    // Si la contraseña es correcta y no es la contraseña por defecto, sigue
     // Generar token JWT
     const token = jwt.sign(
       { id: preceptor.id },

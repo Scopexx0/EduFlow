@@ -1,5 +1,6 @@
 // app/api/asistencia/route.ts
 // Este archivo maneja las rutas de la API para la asistencia de estudiantes.
+export const dynamic = "force-dynamic"
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getPreceptorIdFromCookies } from "@/lib/queries"

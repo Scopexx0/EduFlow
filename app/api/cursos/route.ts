@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getPreceptorIdFromCookies } from "@/lib/queries"
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
       console.warn(`❌ Preceptor no autorizado detectado desde IP: ${request.ip}`)
       return NextResponse.json({ error: "Not authorized" }, { status: 401})
     }
-    
+
     const today = dateUtils.getToday()
 
     // Obtener cursos y total de estudiantes activos por curso

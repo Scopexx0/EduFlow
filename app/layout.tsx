@@ -10,8 +10,14 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "EduFlow - Gestión Educativa",
   description: "Sistema de gestión diaria para instituciones educativas",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-    generator: 'v0.dev'
+  // viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+  // generator: 'v0.dev'
+}
+export const viewport = {
+  width: "device-width",
+  initialscale: 1,
+  maximunscale: 1, 
+  userScalable: "no"
 }
 
 export default function RootLayout({
